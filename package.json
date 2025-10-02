@@ -1,0 +1,38 @@
+{
+  "name": "av1",
+  "version": "1.0.0",
+  "description": "Atividade de Técnicas de Programação AV1",
+  "main": "main.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "tsc && node out/main.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Sette0o0/AV1.git"
+  },
+  "keywords": [
+    "atividade",
+    "gerson",
+    "fatec",
+    "aviação",
+    "rafael",
+    "javascript",
+    "js",
+    "typescript",
+    "ts",
+    "cli"
+  ],
+  "author": "Sette0_0",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Sette0o0/AV1/issues"
+  },
+  "homepage": "https://github.com/Sette0o0/AV1#readme",
+  "dependencies": {
+    "typescript": "^5.9.2"
+  },
+  "devDependencies": {
+    "@types/node": "^24.6.1"
+  }
+}
