@@ -1,30 +1,15 @@
+import { writeFile, mkdir } from "fs/promises";
 import { Aeronave } from "./Aeronave";
-import fs from "fs";
-import path from "path";
 
 export class Relatorio {
-    gerarRelatorio(aeronave: Aeronave): void {
-        let relatorio = `
-Relatório da Aeronave
-Código: ${aeronave.codigo}
-Modelo: ${aeronave.modelo}
-Tipo: ${aeronave.tipo}
-Capacidade: ${aeronave.capacidade}
-Alcance: ${aeronave.alcance}
-Peças: ${aeronave.pecas.map(p => p.nome).join(", ")}
-Etapas: ${aeronave.etapas.map(e => `${e.nome} - ${e.status}`).join("\n")}
-Testes: ${aeronave.testes.map(t => `${t.tipo} - ${t.resultado}`).join("\n")}
-        `;
-        console.log(relatorio)
-    }
+  static async gerar(aeronave: Aeronave, cliente: string, dataEntrega: string) {
+    let texto = `Relatório de Entrega da Aeronave\n`;
+    texto += `Cliente: ${cliente}\nData de entrega: ${dataEntrega}\n\n`;
+    texto += aeronave.getDetalhesCompleto;
 
-    salvarEmArquivo(conteudo: string, filename: string): void {
-        // const pasta = path.join(__dirname, "./dados");
-
-        // if (!fs.existsSync(pasta)){
-        //     fs.mkdirSync(pasta)
-        // }
-
-        // fs.writeFileSync(path.join(pasta, filename), conteudo);
-    }
+    const nomeArquivo = `relatorio_${aeronave.codigo}.txt`;
+    await mkdir(`${__dirname.replace('classes', 'relatorios')}/`, { recursive: true });
+    await writeFile(`${__dirname.replace('classes', 'relatorios')}/${nomeArquivo}`, texto, 'utf8');
+    return nomeArquivo;
+  }
 }

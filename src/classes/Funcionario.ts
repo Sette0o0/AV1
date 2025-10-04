@@ -1,3 +1,4 @@
+import { carregarDados, salvarDados } from "../arquivos"
 import { NivelPermissao } from "../enums"
 
 export class Funcionario{
@@ -9,8 +10,8 @@ export class Funcionario{
     private senha: string
     public nivelPermissao: NivelPermissao
 
-    constructor(id: string, nome: string, telefone: string, endereco: string, usuario: string, senha: string, nivelPermissao: NivelPermissao){
-        this.id = id
+    constructor(nome: string, telefone: string, endereco: string, usuario: string, senha: string, nivelPermissao: NivelPermissao, id?: string){
+        this.id = id || ""
         this.nome = nome
         this.telefone = telefone
         this.endereco = endereco
@@ -20,14 +21,30 @@ export class Funcionario{
     }
 
     autenticar(usuario: string, senha: string): boolean{
-        return true
+        return  this.usuario === usuario && this.senha === senha
     }
 
-    salvar(): void{
-
+    async salvar(): Promise<void> {
+        if (!this.id) {
+            await this.initId()
+        }
+        await salvarDados("funcionarios.json", this)
     }
 
-    carregar(): void{
+    static async carregarTodos(): Promise<Funcionario[]>{
+        const dados = await carregarDados("funcionarios.json")
+        return dados.map(
+            (f: any) =>
+                new Funcionario(f.nome, f.telefone, f.endereco, f.usuario, f.senha, f.nivelPermissao, f.id)
+        )
+    }
 
+    private async initId(): Promise<void> {
+        if (!this.id) {
+            const funcionarios = await carregarDados("funcionarios.json")
+            const ids = funcionarios.map((f: any) => parseInt(f.id)).filter((n: any) => !isNaN(n))
+            const novoId = ids.length ? Math.max(...ids) + 1 : 1
+            this.id = novoId.toString()
+        }
     }
 }

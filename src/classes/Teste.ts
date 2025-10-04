@@ -8,12 +8,4 @@ export class Teste{
         this.tipo = tipo
         this.resultado = resultado
     }
-
-    salvar(): void{
-
-    }
-
-    carregar(): void{
-
-    }
 }

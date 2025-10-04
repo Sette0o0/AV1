@@ -1,6 +1,6 @@
 import { StatusPeca, TipoPeca } from "../enums"
 
-export class Peca{
+export class Peca {
     public nome: string
     public tipo: TipoPeca
     public fornecedor: string
@@ -13,15 +13,7 @@ export class Peca{
         this.status = status
     }
 
-    set atualizarStatus(novoStatus: StatusPeca){
+    set atualizarStatus(novoStatus: StatusPeca) {
         this.status = novoStatus
-    }
-
-    salvar(): void{
-
-    }
-
-    carregar(): void{
-
     }
 }

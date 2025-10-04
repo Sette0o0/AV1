@@ -30,7 +30,8 @@
   },
   "homepage": "https://github.com/Sette0o0/AV1#readme",
   "dependencies": {
-    "typescript": "^5.9.2"
+    "tsc": "^2.0.4",
+    "typescript": "^5.9.3"
   },
   "devDependencies": {
     "@types/node": "^24.6.1"
