@@ -1,6 +1,6 @@
 import { readFile, writeFile, mkdir } from 'fs/promises'
 
-export async function salvarDados(nomeArquivo: string, data: object, chave: string = "codigo") {
+export async function salvarDados(nomeArquivo: string, data: object, chave: string) {
     try {
         await mkdir(`${__dirname}/dados/`, { recursive: true });
         const dadosAntigos: any[] = await carregarDados(nomeArquivo);

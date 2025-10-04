@@ -113,7 +113,7 @@ async function listarAeronaves() {
         return;
     }
     aeronaves.forEach((a, i) => console.log(`${i+1} - ${a.codigo} | ${a.modelo} | ${a.tipo}`));
-    const escolha = await pergunta("Escolha o número da aeronave para gerenciar ou 0 para voltar: ");
+    const escolha = await pergunta("Escolha o número da aeronave para gerenciar ou 0 para voltar:\nCLI> ");
     const index = parseInt(escolha) - 1;
     if(escolha === "0") { mostrarMenuAeronaves(); return; }
     if(index >=0 && index < aeronaves.length){
@@ -127,7 +127,8 @@ async function listarAeronaves() {
 
 async function cadastrarFuncionario(isPrimeiro?: boolean) {
     if(!isPrimeiro && !checarPermissao("cadastrarFuncionario")) { 
-        console.log("Você não tem permissão."); 
+        console.log("Você não tem permissão.");
+        rl.prompt();
         return; 
     }
 
@@ -158,7 +159,11 @@ CLI> `);
 }
 
 async function cadastrarAeronave() {
-    if(!checarPermissao("cadastrarAeronave")) { console.log("Você não tem permissão."); return; }
+    if(!checarPermissao("cadastrarAeronave")) {
+        console.log("Você não tem permissão.");
+        rl.prompt();
+        return;
+    }
 
     console.log('-'.repeat(7), 'Cadastro de Aeronave', '-'.repeat(7));
     const codigo = await pergunta("Código: ");
@@ -179,7 +184,11 @@ CLI> `);
 }
 
 async function cadastrarPeca() {
-    if(!checarPermissao("cadastrarPeca")) { console.log("Você não tem permissão."); return; }
+    if(!checarPermissao("cadastrarPeca")) {
+        console.log("Você não tem permissão.");
+        rl.prompt();
+        return;
+    }
     if(!aeronaveSelecionada){ console.log("Nenhuma aeronave selecionada."); return; }
 
     const nome = await pergunta("Nome da peça: ");
@@ -196,8 +205,72 @@ async function cadastrarPeca() {
     console.log(`Peça ${nome} cadastrada com sucesso!`);
 }
 
+async function alterarStatusPeca() {
+  if (!checarPermissao("alterarStatus")) {
+    console.log("Você não tem permissão para alterar status de peças.");
+    rl.prompt();
+    return;
+  }
+
+  if (!aeronaveSelecionada) {
+    console.log("Nenhuma aeronave selecionada.");
+    return;
+  }
+
+  if (aeronaveSelecionada.pecas.length === 0) {
+    console.log("Nenhuma peça cadastrada nesta aeronave.");
+    return;
+  }
+
+  console.log(`\nPeças da Aeronave ${aeronaveSelecionada.codigo}:`);
+  aeronaveSelecionada.pecas.forEach((p, i) => {
+    console.log(`${i + 1} - ${p.nome} | Status atual: ${p.status}`);
+  });
+
+  const escolhaInput = await pergunta("Escolha o número da peça para alterar o status (0 para cancelar):\nCLI> ");
+  const index = parseInt(escolhaInput) - 1;
+
+  if (escolhaInput === "0") return;
+  if (index < 0 || index >= aeronaveSelecionada.pecas.length) {
+    console.log("Opção inválida.");
+    return;
+  }
+
+  console.log("Escolha o novo status:");
+  console.log("1 - Em Produção");
+  console.log("2 - Em Transporte");
+  console.log("3 - Pronta");
+
+  const statusInput = await pergunta("Número do novo status:\nCLI> ");
+  let novoStatus: StatusPeca;
+
+  switch (statusInput) {
+    case "1":
+      novoStatus = StatusPeca.EM_PRODUCAO;
+      break;
+    case "2":
+      novoStatus = StatusPeca.EM_TRANSPORTE;
+      break;
+    case "3":
+      novoStatus = StatusPeca.PRONTA;
+      break;
+    default:
+      console.log("Opção inválida. Mantendo o status atual.");
+      return;
+  }
+
+  aeronaveSelecionada.pecas[index].status = novoStatus;
+  await aeronaveSelecionada.editar();
+
+  console.log(`Status da peça "${aeronaveSelecionada.pecas[index].nome}" alterado para ${novoStatus}.`);
+}
+
 async function cadastrarEtapa() {
-    if(!checarPermissao("cadastrarEtapa")) { console.log("Você não tem permissão."); return; }
+    if(!checarPermissao("cadastrarEtapa")) {
+        console.log("Você não tem permissão.");
+        rl.prompt();
+        return;
+    }
     if(!aeronaveSelecionada){ console.log("Nenhuma aeronave selecionada."); return; }
 
     const nome = await pergunta("Nome da etapa: ");
@@ -221,8 +294,77 @@ async function cadastrarEtapa() {
     console.log(`Etapa ${nome} cadastrada com sucesso!`);
 }
 
+async function alterarStatusEtapa() {
+  if (!checarPermissao("alterarStatus")) {
+    console.log("Você não tem permissão para alterar status de etapas.");
+    rl.prompt();
+    return;
+  }
+
+  if (!aeronaveSelecionada) {
+    console.log("Nenhuma aeronave selecionada.");
+    return;
+  }
+
+  if (aeronaveSelecionada.etapas.length === 0) {
+    console.log("Nenhuma etapa cadastrada nesta aeronave.");
+    return;
+  }
+
+  console.log(`\nEtapas da Aeronave ${aeronaveSelecionada.codigo}:`);
+  aeronaveSelecionada.etapas.forEach((e, i) => {
+    console.log(`${i + 1} - ${e.nome} | Status atual: ${e.status}`);
+  });
+
+  const escolhaInput = await pergunta("Escolha o número da etapa para alterar o status (0 para cancelar):\nCLI> ");
+  const index = parseInt(escolhaInput) - 1;
+
+  if (escolhaInput === "0") return;
+  if (index < 0 || index >= aeronaveSelecionada.etapas.length) {
+    console.log("Opção inválida.");
+    return;
+  }
+
+  const etapa = aeronaveSelecionada.etapas[index];
+
+  console.log("Escolha o novo status:");
+  console.log("1 - Pendente");
+  console.log("2 - Em Andamento");
+  console.log("3 - Concluída");
+
+  const statusInput = await pergunta("Número do novo status:\nCLI> ");
+  let sucesso = false;
+
+  switch (statusInput) {
+    case "1":
+      etapa.status = StatusEtapa.PENDENTE;
+      sucesso = true;
+      break;
+    case "2":
+      sucesso = etapa.iniciar(aeronaveSelecionada.etapas);
+      break;
+    case "3":
+      sucesso = etapa.finalizar(aeronaveSelecionada.etapas);
+      break;
+    default:
+      console.log("Opção inválida. Mantendo o status atual.");
+      return;
+  }
+
+  if (sucesso) {
+    await aeronaveSelecionada.editar();
+    console.log(`Status da etapa "${etapa.nome}" alterado para ${etapa.status}.`);
+  } else {
+    console.log(`Não foi possível alterar o status da etapa "${etapa.nome}". A etapa anterior deve ser concluída antes.`);
+  }
+}
+
 async function cadastrarTeste() {
-    if(!checarPermissao("registrarTeste")) { console.log("Você não tem permissão."); return; }
+    if(!checarPermissao("registrarTeste")) {
+        console.log("Você não tem permissão.");
+        rl.prompt();
+        return;
+    }
     if(!aeronaveSelecionada){ console.log("Nenhuma aeronave selecionada."); return; }
 
     const tipos = Object.values(TipoTeste);
@@ -234,7 +376,10 @@ async function cadastrarTeste() {
 2 - ${ResultadoTeste.REPROVADO}
 CLI> `))==='1'? ResultadoTeste.APROVADO : ResultadoTeste.REPROVADO;
 
-    if(aeronaveSelecionada.testes.some(t=>t.tipo===tipo)){ console.log("Teste já cadastrado."); return; }
+    if(aeronaveSelecionada.testes.some(t=>t.tipo===tipo && t.resultado===resultado)){
+        console.log("Teste com esse resultado já cadastrado.");
+        return;
+    }
 
     aeronaveSelecionada.addTeste(new Teste(tipo,resultado));
     await aeronaveSelecionada.editar();
@@ -242,7 +387,11 @@ CLI> `))==='1'? ResultadoTeste.APROVADO : ResultadoTeste.REPROVADO;
 }
 
 async function gerarRelatorio() {
-    if(!checarPermissao("gerarRelatorio")) { console.log("Você não tem permissão."); return; }
+    if(!checarPermissao("gerarRelatorio")) {
+        console.log("Você não tem permissão.");
+        rl.prompt();
+        return;
+    }
     if(!aeronaveSelecionada){ console.log("Nenhuma aeronave selecionada."); return; }
 
     const cliente = await pergunta("Nome do cliente: ");
@@ -328,17 +477,17 @@ rl.on('line', async (line) => {
                     mostrarMenuAeronaveSelecionada();
                     break;
                 case '2':
-                    console.log("Use opção de alterar status no CLI.");
-                    mostrarMenuAeronaveSelecionada();
-                    break;
+                    await alterarStatusPeca()
+                    mostrarMenuAeronaveSelecionada()
+                    return;
                 case '3':
                     await cadastrarEtapa();
                     mostrarMenuAeronaveSelecionada();
                     break;
                 case '4':
-                    console.log("Use opção de alterar status no CLI.");
-                    mostrarMenuAeronaveSelecionada();
-                    break;
+                    await alterarStatusEtapa()
+                    mostrarMenuAeronaveSelecionada()
+                    return;
                 case '5':
                     await cadastrarTeste();
                     mostrarMenuAeronaveSelecionada();

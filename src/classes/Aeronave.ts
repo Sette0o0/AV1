@@ -85,12 +85,12 @@ Alcance: ${this.alcance}\n`;
         const existe = aeronaves.some(a => a.codigo === this.codigo)
         if (existe) return false
 
-        await salvarDados("aeronaves.json", this)
+        await salvarDados("aeronaves.json", this, "codigo")
         return true
     }
 
     async editar(): Promise<void> {
-        await salvarDados("aeronaves.json", this);
+        await salvarDados("aeronaves.json", this, "codigo");
     }
 
     static async carregarTodos(): Promise<Aeronave[]> {

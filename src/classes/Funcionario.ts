@@ -28,7 +28,7 @@ export class Funcionario{
         if (!this.id) {
             await this.initId()
         }
-        await salvarDados("funcionarios.json", this)
+        await salvarDados("funcionarios.json", this, "id")
     }
 
     static async carregarTodos(): Promise<Funcionario[]>{
